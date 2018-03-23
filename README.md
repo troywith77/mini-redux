@@ -1,2 +1,3 @@
 # mini-redux
-build my own redux
+
+实现了一个简单的 `redux`

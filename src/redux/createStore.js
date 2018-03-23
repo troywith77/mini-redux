@@ -1,6 +1,6 @@
 const createStore = (reducer) => {
   let state;
-  const listeners = [];
+  let listeners = [];
   const getState = () => state;
   const dispatch = (action) => {
     state = reducer(state, action);
@@ -12,18 +12,10 @@ const createStore = (reducer) => {
       listeners = listeners.filter(i => i !== listener);
     };
   };
+  dispatch({
+    type: '@@INIT'
+  })
   return { getState, dispatch, subscribe };
 };
 
-const reducerHandler = {
-  'INCREMENT': (state) => state + 1,
-  'DECREMENT': (state) => state - 1
-};
-
-const reducer = (state = 0, action) => {
-  console.log(action)
-  if (reducerHandler[action.type]) {
-    return reducerHandler[action.type](state);
-  };
-  return state;
-};
+export default createStore;

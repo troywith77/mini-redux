@@ -1,64 +1,11 @@
-const store = createStore(reducer);
+import createStore from './store';
+import { increment, decrement } from './actions';
 
-const oldDispatch = store.dispatch;
-
-const logger = store => next => (action) => {
-  console.group(action.type);
-  console.log(store.getState());
-  const returnValue = next(action);
-  console.log(store.getState());
-  console.groupEnd(action.type);
-  return returnValue;
-};
-
-const thunk = store => next => (action) => {
-  if (typeof action === 'function') {
-    return action(next, store.getState)
-  } else {
-    return next(action)
-  }
-};
-
-const middlewares = [logger, thunk];
-
-const wrapMiddlewares = (store, middlewares) => {
-  middlewares.forEach((middleware) => {
-    store.dispatch = middleware(store)(store.dispatch, store.getState);
-  });
-};
-
-wrapMiddlewares(store, middlewares);
-
-store.dispatch({
-  type: '@@INIT'
-})
+const store = createStore();
 
 const render = () => {
   const root = document.querySelector('#count');
   root.innerHTML = store.getState();
-};
-
-const sleep = (n) => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve();
-  }, n * 1000);
-})
-
-const increment = () => {
-  const incre = () => (dispatch) => {
-    sleep(1).then(() => {
-      dispatch({
-        type: 'INCREMENT'
-      })
-    })
-  }
-  store.dispatch(incre());
-};
-
-const decrement = () => {
-  store.dispatch({
-    type: 'DECREMENT'
-  })
 };
 
 store.subscribe(() => {
@@ -66,3 +13,14 @@ store.subscribe(() => {
 });
 
 render();
+
+const incrementEl = document.querySelector('#increment');
+const decrementEl = document.querySelector('#decrement');
+
+incrementEl.addEventListener('click', () => {
+  store.dispatch(increment());
+});
+
+decrementEl.addEventListener('click', () => {
+  store.dispatch(decrement());
+});
